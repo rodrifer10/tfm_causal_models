@@ -1,0 +1,9 @@
+*.csv
+*.xls
+*.xlsx
+*.docx
+*.parquet
+*.joblib
+*.pickle
+/old_test_discarded/
+/__pycache__/
