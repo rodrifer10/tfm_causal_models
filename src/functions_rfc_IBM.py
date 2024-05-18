@@ -25,11 +25,8 @@ from sklearn.impute import SimpleImputer
 import graphviz
 from causalnex.plots import plot_structure, NODE_STYLE, EDGE_STYLE
 
-# Indice:
-## 1. Funciones de la cátedra utilizadas (4)
-## 2. Funciones propias (15)
+#########
 
-###-------------------------------- Funciones de la cátedra utilizadas ---------------------------------------
 def duplicate_columns(frame):
     '''
     Lo que hace la función es, en forma de bucle, ir seleccionando columna por columna del DF que se le indique
@@ -160,7 +157,7 @@ def cramers_v(confusion_matrix):
     return np.sqrt(phi2corr / min((kcorr-1), (rcorr-1)))
 
 
-###----------------------------------------- Funciones Propias -----------------------------------------------
+#############
 
 def tipos_vars(df=None, show=True):
     '''
