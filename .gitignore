@@ -5,5 +5,5 @@
 *.parquet
 *.joblib
 *.pickle
-/old_test_discarded/
+/notebooks/old_test_discarded/
 /__pycache__/
