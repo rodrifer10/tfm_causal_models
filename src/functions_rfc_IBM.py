@@ -29,9 +29,16 @@ from causalnex.plots import plot_structure, NODE_STYLE, EDGE_STYLE
 
 def duplicate_columns(frame):
     '''
-    Lo que hace la función es, en forma de bucle, ir seleccionando columna por columna del DF que se le indique
-    y comparar sus values con los de todas las demás columnas del DF. Si son exactamente iguales, añade dicha
-    columna a una lista, para finalmente devolver la lista con los nombres de las columnas duplicadas.
+    ----------------------------------------------------------------------------------------------------------
+    Función duplicate_columns:
+    ----------------------------------------------------------------------------------------------------------
+    - Funcionamiento:
+        La función recibe un DataFrame y devuelve una lista con los nombres de las columnas que son duplicadas
+        en el mismo.
+    - Inputs:
+        - frame: DataFrame de Pandas a analizar
+    - Return:
+        - dups: lista con los nombres de las columnas duplicadas.
     '''
     groups = frame.columns.to_series().groupby(frame.dtypes).groups
     dups = []
@@ -86,10 +93,23 @@ def dame_variables_categoricas(dataset=None):
 
 def outliers_detection(df, list_vars, target, multiplier=3, list_out=False, list_threshold=0):
     """
-    Devuelve el porcentaje de valores que exceden del intervalo de confianza
-    :type series:
-    :param multiplier:
-    :return:
+    ----------------------------------------------------------------------------------------------------------
+    Función outliers_detection:
+    ----------------------------------------------------------------------------------------------------------
+    - Funcionamiento:
+        La función recibe un DataFrame, una lista de variables a analizar, una variable objetivo y un
+        multiplicador para el cálculo de los outliers. En base a estos datos, la función analiza cada
+        variable y muestra un resumen de los outliers encontrados en cada una de ellas. Si el porcentaje
+        de outliers supera el umbral establecido, se muestra un resumen de los valores encontrados.
+    - Inputs:
+        -- df: DataFrame de Pandas a analizar
+        -- list_vars: lista con los nombres de las variables a analizar
+        -- target: nombre de la variable objetivo
+        -- multiplier: multiplicador para el cálculo de los outliers
+        -- list_out: booleano que determina si se desea obtener una lista con los índices de los outliers
+        -- list_threshold: umbral para determinar si se muestra o no un resumen de los outliers encontrados
+    - Return:
+        -- pd_final_styled: DataFrame con un resumen de los outliers encontrados en cada variable
     """
     pd_final = pd.DataFrame()
     outliers_index = []
@@ -139,13 +159,18 @@ def outliers_detection(df, list_vars, target, multiplier=3, list_out=False, list
 #####
 
 def cramers_v(confusion_matrix):
-    """ 
-    calculate Cramers V statistic for categorial-categorial association.
-    uses correction from Bergsma and Wicher,
-    Journal of the Korean Statistical Society 42 (2013): 323-328
-    
-    confusion_matrix: tabla creada con pd.crosstab()
-    
+    """
+    ----------------------------------------------------------------------------------------------------------
+    Función cramers_v:
+    ----------------------------------------------------------------------------------------------------------
+    - Funcionamiento:
+        La función recibe una matriz de confusión y calcula el estadístico de Cramers V para la asociación
+        entre dos variables categóricas de Bergsma and Wicher, Journal of the Korean Statistical Society 42
+        (2013): 323-328
+    - Inputs:
+        -- confusion_matrix: tabla creada con pd.crosstab()
+    - Return:
+        -- np.sqrt(phi2corr / min((kcorr-1), (rcorr-1)): valor del estadístico de Cramers V
     """
     chi2 = ss.chi2_contingency(confusion_matrix)[0]
     n = confusion_matrix.sum().sum()
@@ -348,14 +373,9 @@ def double_plot(df, col_name, is_cont, target, palette=['deepskyblue','crimson']
         plt.yscale(y_scale)
         ax2.set_ylabel('Proportion')
         ax2.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-        
-        #Prueba descartada:
-        #barplot2_df = df.pivot_table(columns=[target,col_name], aggfunc='count').iloc[0,:].reset_index()
-        #sns.barplot(data=barplot2_df, x=col_name, y=np.log(barplot2_df.iloc[:,2]), hue=barplot2_df[target].astype('string'), palette=['deepskyblue','crimson'], ax=ax2)
-        #ax2.set_ylabel('Log(Count)')
-        
         ax2.set_title(target)
         plt.xticks(rotation = 90)
+    
     ax2.set_xlabel(col_name)
     
     plt.tight_layout()
@@ -388,9 +408,9 @@ def plot_corr(corr, title='Matriz de correlaciones', figsize=(14,8), target_text
     sns.heatmap(corr, annot=True, fmt=fmt, cmap=cmap, ax=ax, vmin=vmin, vmax=vmax)
     for t in ax.texts:
         if ((float(t.get_text())>=annot_floor) | (float(t.get_text())<=-annot_floor)) & (float(t.get_text())<1) :
-            t.set_text(t.get_text()) # solo quiero que muestre las anotaciones para correlaciones mayores a 0.4, para identificarlos. El resto no me es muy relevante
+            t.set_text(t.get_text())
         elif (t in ax.texts[-len(corr.iloc[0]):len(list(ax.texts))]) & (target_text) :
-            t.set_text(t.get_text()) # además me interesa mostrar todas las correlaciones con mi variable objetivo, en la última fila
+            t.set_text(t.get_text())
         elif annot_all==False:
             t.set_text("")
     plt.title(title, fontdict={'size':'20'})
@@ -942,8 +962,20 @@ def plot_save(sm, path):
 
 @curry
 def effect(data, y, t):
-        return (np.sum((data[t] - data[t].mean())*data[y]) /
-                np.sum((data[t] - data[t].mean())**2))
+    """
+    ----------------------------------------------------------------------------------------------------------
+    Función effect:
+    ----------------------------------------------------------------------------------------------------------
+    - Funcionamiento: Función que recibe un DataFrame, una variable target y una variable tratamiento. Devuelve
+    el efecto causal estimado en función de la variable objetivo.
+    - Inputs:
+        - data: DataFrame de Pandas
+        - y: variable target/outcome
+        - t: variable treatment
+    - Return: efecto causal estimado en función de la variable objetivo.
+    """
+    return (np.sum((data[t] - data[t].mean())*data[y]) /
+            np.sum((data[t] - data[t].mean())**2))
 
 #########
 
@@ -954,8 +986,8 @@ def cumulative_gain_curve(df, prediction, y, t, ascending=False, normalize=False
     Función cumulative_gain_curve:
     ----------------------------------------------------------------------------------------------------------
     - Funcionamiento: Función que recibe un DataFrame, una predicción, la variable target, la variable
-    treatment, el orden y un booleano para determinar si se quiere normalizar o no. Devuelve un array con la
-    sensibilidad acumulada en función de las predicciones.
+    treatment, el orden y un booleano para determinar si se quiere normalizar o no. Devuelve un array con el
+    efecto o sensibilidad acumulada en función de las predicciones.
 
     - Inputs:
         - df: DataFrame de Pandas
@@ -1039,7 +1071,7 @@ def effect_by_quantile(df, pred, y, t, q=10):
     - Return: DataFrame con el efecto estimado en cada cuantil.
     """
     
-    # makes quantile partitions
+    # quantile partitions
     groups = np.round(pd.IntervalIndex(pd.qcut(df[pred], q=q)).mid, 2) 
     
     return (df
